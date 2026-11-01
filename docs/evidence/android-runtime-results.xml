@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="7" failures="0" errors="0" skipped="0" time="0.000" timestamp="2026-11-01T16:52:30" hostname="localhost">
+  <testsuite name="org.msc.app.FoundationTest" tests="1" failures="0" errors="0" skipped="0" time="52.597" timestamp="2026-11-01T16:52:30" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="launchesRealLibraryAndNavigates" classname="org.msc.app.FoundationTest" time="52.597" />
+  </testsuite>
+  <testsuite name="org.msc.app.LibraryPersistenceTest" tests="1" failures="0" errors="0" skipped="0" time="1.015" timestamp="2026-11-01T16:52:30" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="realAudioMetadataFavoritesPlaylistAndLyricsSurviveReopen" classname="org.msc.app.LibraryPersistenceTest" time="1.015" />
+  </testsuite>
+  <testsuite name="org.msc.app.PlaybackFixtureTest" tests="3" failures="0" errors="0" skipped="0" time="7.921" timestamp="2026-11-01T16:52:30" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="decodesOriginalFlac" classname="org.msc.app.PlaybackFixtureTest" time="3.004" />
+    <testcase name="decodesOriginalPcmAndAdvancesMediaTime" classname="org.msc.app.PlaybackFixtureTest" time="1.872" />
+    <testcase name="decodesOriginalMp3" classname="org.msc.app.PlaybackFixtureTest" time="3.045" />
+  </testsuite>
+  <testsuite name="org.msc.app.ProviderContractTest" tests="1" failures="0" errors="0" skipped="0" time="0.044" timestamp="2026-11-01T16:52:30" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="parsesDocumentedMetadataWithoutTreatingCatalogUrlAsAudio" classname="org.msc.app.ProviderContractTest" time="0.044" />
+  </testsuite>
+  <testsuite name="org.msc.app.ServicePlaybackTest" tests="1" failures="0" errors="0" skipped="0" time="67.061" timestamp="2026-11-01T16:52:30" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="serviceDecodesPausesSeeksKeepsSessionWhenDiscChangesAndPlaysInBackground" classname="org.msc.app.ServicePlaybackTest" time="67.061" />
+  </testsuite>
+</testsuites>

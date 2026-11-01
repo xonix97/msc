@@ -1,9 +1,11 @@
-# Foundation build and release status
+# Build and release
 
-Use JDK 21, SDK 36, build tools 36.0.0 and the pinned Gradle wrapper. `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest` builds and validates the foundation. Then boot an API 35 device and run `./gradlew :app:connectedDebugAndroidTest`.
+JDK 21, SDK platform 36/build tools 36.0.0 and the checksum-pinned Gradle wrapper are required. Run `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest`. Boot a device and run `./gradlew :app:connectedDebugAndroidTest`, followed by `python3 scripts/verify_android_results.py`. Empty/failed/skipped runs cannot satisfy the runtime gate. Remove only generated connected results before each fresh run.
 
-The GitHub Actions foundation workflow provisions an accelerated emulator. It has been written locally; no hosted run has been observed. It is not full release validation. Its test scope is only the baseline launch gate. The comprehensive acceptance plan remains pending.
+Install `app/build/outputs/apk/debug/app-debug.apk` using `adb install --no-streaming -r ...`; launch org.msc.app/.MainActivity. The same debug key and increasing version code allow upgrading the earlier msc build. Never commit that key. Production releases require separately authorized signing credentials and the full outstanding acceptance matrix.
 
-Debug builds use Android's generated local debug key, which must not be committed. APK location: app/build/outputs/apk/debug/app-debug.apk. The application ID can be changed with -Pmsc.applicationId=your.package. For production, establish name clearance, a release version and authorized signing outside source control, then implement and pass all feature and runtime acceptance tests. No release workflow, signed production APK or published release is claimed yet.
+The GitHub Actions workflow builds, lints and runs the instrumented suite on an accelerated emulator, preserving APKs and reports as artifacts. Hosted results must be observed before claiming CI passed. Local software-emulator results and remote CI results are distinct.
 
-After a fresh connected test run, execute `python3 scripts/verify_android_results.py`; the current runner can return zero even when the device failed and no tests ran. Delete only the generated `app/build/outputs/androidTest-results/connected` directory before rerunning to avoid stale results.
+The repository releases/ folder carries the current debug APK, notes, checksums and evidence summary. It is not a GitHub Releases publication or a signed production release. Release checksums must correspond to the exact copied APK, and the test report must describe that build's actual verification and remaining limits.
+
+In this cloud environment, keep ANDROID_USER_HOME=/workspace/android-home as in the saved startup instructions. It selects the retained debug key used by the earlier APK. A different Android user directory can select a different debug key and make an in-place update fail. Do not commit either key.

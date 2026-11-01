@@ -1,11 +1,14 @@
-# msc 0.1.0 — Foundation debug prerelease
+# msc 0.2.0-local — Debug local-player build
 
-This prerelease contains the Android foundation only. **It is not a functional music player or a verified production release.**
+Replaces the foundation screen with a real local music player. Install this APK over the earlier msc build, then choose **Import files** or **Scan device**. The signing certificate is compatible with the old APK and an actual in-place upgrade was checked on Android.
 
-- App name: msc; application ID: org.msc.app. Android API 26+; debug-signed APK.
-- Builds: debug APK, test APK and Android lint complete successfully.
-- Unit suite: 3 LRC tests passed; lint has zero errors and seven warnings.
-- Local emulator launch failed and no instrumentation tests completed. The renamed APK has not been installed or launched. Runtime verification remains pending.
-- Music library, playback UI, vinyl/CD modes, playlists, effects, downloads and online integrations are not implemented. ClashFLAC is audited preliminarily and disabled.
+- Home, Library, Search and Player, plus a mini player outside the immersive player.
+- Local file/folder import, MediaStore scans, metadata/artwork, grouping, sorting and local search.
+- Media3 service playback, seek/previous/next, queue editing, shuffle/repeat and background media session.
+- Vinyl/CD views using the same engine, artwork-derived colors and reduced motion.
+- Persistent favorites, playlists/history, LRC/text lyrics import and device-supported audio effects.
+- Optional ClashFLAC HTTPS **catalog metadata** adapter. No hosted server is bundled; live streaming/downloads are unavailable without an established permitted contract.
 
-Assets include the debug APK, SHA-256 checksums and TEST_REPORT.md. No signing keys or copyrighted songs are included. A passing build or verified APK signature does not establish runtime functionality.
+Verification: 6 JVM tests and 7 real Android API 28 instrumentation tests passed; no skips or failures in the final suite. Lint has zero errors and 18 warnings. README screenshots are real emulator captures with original test audio/artwork, not bundled music.
+
+This is debug signed, not a complete production release. Crossfade, authorized online playback/downloads, acoustic/gapless timing, effects hardware verification, the complete lyrics/picker/process-death/device matrix and newest-runtime checks remain outstanding. See TEST_REPORT.md for the exact scope and evidence. Advancing media time does not establish audible or bit-perfect output.

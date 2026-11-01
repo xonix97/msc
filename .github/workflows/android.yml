@@ -1,11 +1,11 @@
-name: Android foundation
+name: Android player
 on:
   push:
   pull_request:
 permissions:
   contents: read
 jobs:
-  foundation:
+  player:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -23,7 +23,7 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Android runtime foundation gate
+      - name: Android runtime tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: foundation-evidence
+          name: player-evidence
           path: |
             app/build/reports/
             app/build/outputs/apk/

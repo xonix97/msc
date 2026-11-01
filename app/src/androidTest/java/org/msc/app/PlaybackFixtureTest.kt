@@ -14,10 +14,13 @@ import org.junit.runner.RunWith
 /** Real decoder smoke test. Advancing media time is not evidence of acoustic output. */
 @RunWith(AndroidJUnit4::class)
 class PlaybackFixtureTest {
-    @Test fun decodesOriginalPcmAndAdvancesMediaTime() {
+    @Test fun decodesOriginalPcmAndAdvancesMediaTime() = decode("tone-a.wav")
+    @Test fun decodesOriginalFlac() = decode("tone.flac")
+    @Test fun decodesOriginalMp3() = decode("tone.mp3")
+    private fun decode(name: String) {
         val context = ApplicationProvider.getApplicationContext<android.content.Context>()
-        val fixture = java.io.File(context.cacheDir, "tone-a.wav")
-        InstrumentationRegistry.getInstrumentation().context.assets.open("tone-a.wav").use { source ->
+        val fixture = java.io.File(context.cacheDir, name)
+        InstrumentationRegistry.getInstrumentation().context.assets.open(name).use { source ->
             fixture.outputStream().use { source.copyTo(it) }
         }
         val instrumentation = InstrumentationRegistry.getInstrumentation()

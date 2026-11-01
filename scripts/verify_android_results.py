@@ -6,8 +6,13 @@ import xml.etree.ElementTree as ET
 root = Path(__file__).resolve().parents[1]
 files = list((root / "app/build/outputs/androidTest-results/connected/debug").glob("TEST-*.xml"))
 expected = {
-    "org.msc.app.FoundationTest",
-    "org.msc.app.PlaybackFixtureTest",
+    "org.msc.app.FoundationTest#launchesRealLibraryAndNavigates",
+    "org.msc.app.PlaybackFixtureTest#decodesOriginalPcmAndAdvancesMediaTime",
+    "org.msc.app.PlaybackFixtureTest#decodesOriginalFlac",
+    "org.msc.app.PlaybackFixtureTest#decodesOriginalMp3",
+    "org.msc.app.LibraryPersistenceTest#realAudioMetadataFavoritesPlaylistAndLyricsSurviveReopen",
+    "org.msc.app.ServicePlaybackTest#serviceDecodesPausesSeeksKeepsSessionWhenDiscChangesAndPlaysInBackground",
+    "org.msc.app.ProviderContractTest#parsesDocumentedMetadataWithoutTreatingCatalogUrlAsAudio",
 }
 seen = set()
 count = 0
@@ -21,7 +26,7 @@ for file in files:
         if case.find("failure") is not None or case.find("error") is not None or case.find("skipped") is not None:
             sys.exit(f"Android case did not pass: {case.get('name')}")
         count += 1
-        seen.add(case.get("classname"))
-if count < 2 or not expected.issubset(seen):
+        seen.add(f"{case.get('classname')}#{case.get('name')}")
+if count < len(expected) or not expected.issubset(seen):
     sys.exit(f"Android runtime gate failed: {count} completed cases; missing {sorted(expected - seen)}")
 print(f"Android runtime gate: {count} cases passed")

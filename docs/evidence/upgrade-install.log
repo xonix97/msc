@@ -1,0 +1,12 @@
+Success
+/workspace/msc/releases/msc-0.1.0-foundation-debug.apk: 1 file pushed, 0 skipped. 9.4 MB/s (14364522 bytes in 1.459s)
+Performing Push Install
+Success
+/workspace/msc/app/build/outputs/apk/debug/app-debug.apk: 1 file pushed, 0 skipped. 38.0 MB/s (14669212 bytes in 0.368s)
+Performing Push Install
+Success
+Starting: Intent { cmp=org.msc.app/.MainActivity }
+Status: timeout
+Activity: org.msc.app/.MainActivity
+WaitTime: 11165
+Complete

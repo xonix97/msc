@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.msc.app.LrcParserTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-01T15:22:46.147Z" hostname="46b2714b1ffa" time="0.051">
+<testsuite name="org.msc.app.LrcParserTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-01T16:49:27.250Z" hostname="46b2714b1ffa" time="0.027">
   <properties/>
-  <testcase name="parsesFractionsAndRepeatedTimestamps" classname="org.msc.app.LrcParserTest" time="0.043"/>
+  <testcase name="parsesFractionsAndRepeatedTimestamps" classname="org.msc.app.LrcParserTest" time="0.022"/>
   <testcase name="seekingSelectsActualPosition" classname="org.msc.app.LrcParserTest" time="0.0"/>
-  <testcase name="ignoresMalformedAndMetadataLines" classname="org.msc.app.LrcParserTest" time="0.001"/>
+  <testcase name="ignoresMalformedAndMetadataLines" classname="org.msc.app.LrcParserTest" time="0.004"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
