@@ -8,7 +8,7 @@ Planned boundaries: library indexing on IO dispatchers, persistent personal-libr
 
 Minimum API 26; compile and target API 36. Tool versions were checked against official Google/Maven metadata. AGP 9.5.0 pins Kotlin 2.2.10, so the Compose compiler plugin matches it. Dependency compatibility must be established by an actual build.
 
-DiscNest and org.discnest.app are provisional; no name/trademark search has been completed. applicationId is overrideable with -Pdiscnest.applicationId=your.package.
+The app name is msc, as selected by the user. org.discnest.app remains the configurable application identifier. applicationId is overrideable with -Pdiscnest.applicationId=your.package.
 
 This repository currently contains only the Phase A foundation. It is not the requested complete player or a release candidate. Feature implementation follows the runtime foundation gate.
 

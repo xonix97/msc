@@ -1,4 +1,4 @@
-# DiscNest — foundation in progress
+# msc — foundation in progress
 
 Android-only vinyl/CD music-player project. **This is a Phase A foundation, not a functional music player or verified release.** No online music providers are enabled, and no copyrighted music is included.
 

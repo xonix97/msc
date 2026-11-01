@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
             MaterialTheme(colorScheme = darkColorScheme()) {
                 Scaffold { inset ->
                     Column(Modifier.padding(inset).padding(24.dp)) {
-                        Text("DiscNest", style = MaterialTheme.typography.headlineLarge)
+                        Text("msc", style = MaterialTheme.typography.headlineLarge)
                         Spacer(Modifier.height(16.dp))
                         Text("Android foundation validation", style = MaterialTheme.typography.titleLarge)
                         Text("Music playback is not implemented in this foundation build.")

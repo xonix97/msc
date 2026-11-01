@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 class FoundationTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
     @Test fun launchesFoundationWithoutAdvertisingPlayback() {
-        compose.onNodeWithText("DiscNest").assertIsDisplayed()
+        compose.onNodeWithText("msc").assertIsDisplayed()
         compose.onNodeWithText("Music playback is not implemented in this foundation build.").assertIsDisplayed()
     }
 }
