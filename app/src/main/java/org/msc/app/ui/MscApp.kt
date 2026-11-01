@@ -37,7 +37,7 @@ import org.msc.app.data.*
 @OptIn(ExperimentalMaterial3Api::class)
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable fun MscApp(model: MusicViewModel, onImport: () -> Unit, onScan: () -> Unit,
-    onImportFolder: () -> Unit, onImportLyrics: (String) -> Unit, onSoundSettings: () -> Unit) {
+    onImportFolder: () -> Unit, onImportLyrics: (String) -> Unit, onSoundSettings: () -> Unit, onStartClash: () -> Unit) {
     val tracks by model.tracks.collectAsStateWithLifecycle()
     val playlists by model.playlists.collectAsStateWithLifecycle()
     val playback by model.playback.collectAsStateWithLifecycle()
@@ -125,7 +125,7 @@ import org.msc.app.data.*
                 }
             }
         }
-        if (showSettings) SettingsSheet(model, onDismiss = { showSettings = false }, onSoundSettings, onImportFolder)
+        if (showSettings) SettingsSheet(model, onDismiss = { showSettings = false }, onSoundSettings, onImportFolder, onStartClash)
         if (showQueue) QueueSheet(model, playback, onDismiss = { showQueue = false })
         if (showLyrics && current != null) LyricsSheet(model, current, playback.position, { showLyrics = false }, { onImportLyrics(current.uri) })
         if (showEffects) EffectsSheet(model) { showEffects = false }

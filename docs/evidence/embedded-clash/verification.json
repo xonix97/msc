@@ -1,0 +1,35 @@
+{
+  "date_utc": "2026-11-01",
+  "upstream_clashflac": "0897400decfa510d8addd56ab23b25710fc99463",
+  "ffmpeg_source": "894da5ca7d742e4429ffb2af534fcda0103ef593",
+  "host_http_tests": 11,
+  "android_native_tests": 2,
+  "android_device": "API 28 AOSP x86_64 software emulator",
+  "local_player_unit_tests": 6,
+  "embedded_apk_built": false,
+  "provider_playback_tested": false,
+  "ffmpeg": {
+    "x86_64": {
+      "sha256": "84d0c5f9687a93e4049929618b2ac0da242b2896532057a1c8869f2eaf25be66",
+      "bytes": 2125592,
+      "executed_on_android": true,
+      "load_alignment": 16384
+    },
+    "arm64-v8a": {
+      "sha256": "23552cbe4fc3f862271252a7d3e68f10d0d89b368cf87c18b8c72f3f00e521b0",
+      "bytes": 2005920,
+      "executed_on_android": false,
+      "load_alignment": 16384
+    },
+    "armeabi-v7a": {
+      "sha256": "96d4d2089da57f1952f586087b2220431b5b328ce5ffd8827c38f3b019b2e511",
+      "bytes": 1843752,
+      "executed_on_android": false,
+      "load_alignment": 16384
+    }
+  },
+  "local_player_lint": {
+    "Error": 0,
+    "Warning": 19
+  }
+}

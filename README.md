@@ -24,6 +24,8 @@ Captured from the real Android emulator using original test audio/artwork. Demo 
 
 ## ClashFLAC
 
+The `embedded-clash` development branch contains an [experimental on-device server port](embedded-clash/README.md). It vendors the real upstream backend and adds a private foreground service. **An embedded APK is not available yet:** Android Python dependency packaging is blocked by the cloud environment's network policy. The published 0.2.0 APK has the capabilities below.
+
 Settings accepts an HTTPS ClashFLAC server URL and an explicit catalog-search toggle. The adapter implements the documented `GET /api/search?q=...&limit=20` metadata contract. No hosted server is bundled or assumed. Server authorization and catalog access must already be configured by its operator. Results are labeled **catalog only**; streaming and downloads are unavailable because permitted playback/download contracts have not been established. See [provider audit](docs/PROVIDER_AUDIT.md).
 
 ## Development
@@ -42,4 +44,4 @@ See [architecture](docs/ARCHITECTURE.md), [test report](docs/TEST_REPORT.md), [b
 
 ## Privacy and licensing
 
-Music permission is used only for MediaStore scans; the system picker grants access to selected files/folders. INTERNET is used only for an enabled ClashFLAC catalog connection. No account, analytics or remote backend is required for local music. Imported audio is read, never rewritten. MIT source license; original test tones/artwork are generated test material, not bundled commercial music. Never commit signing keys or provider credentials.
+Music permission is used only for MediaStore scans; the system picker grants access to selected files/folders. In the published local-player build, INTERNET is used only for an enabled ClashFLAC catalog connection. No account, analytics or remote backend is required for local music. Imported audio is read, never rewritten. msc source uses the MIT license; the optional embedded build has additional [GPL/LGPL distribution requirements](embedded-clash/README.md#provider-configuration-and-licensing). Original test tones/artwork are generated test material, not bundled commercial music. Never commit signing keys or provider credentials.

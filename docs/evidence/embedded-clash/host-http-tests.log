@@ -1,0 +1,31 @@
+2026-11-01 18:37:05,625 [INFO] tidal.auth: No saved Tidal user credentials found. Using Client Credentials mode.
+/workspace/msc/embedded-clash/src/main/python/clashflac/server.py:239: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+/workspace/setup/clash-host311/lib/python3.11/site-packages/fastapi/applications.py:4723: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  return self.router.on_event(event_type)  # ty: ignore[deprecated]
+test_another_session_cannot_claim_the_running_server (test_runtime.RuntimeTest.test_another_session_cannot_claim_the_running_server) ... ok
+test_non_ascii_token_is_rejected_without_server_error (test_runtime.RuntimeTest.test_non_ascii_token_is_rejected_without_server_error) ... ok
+test_real_catalog_requires_real_credentials (test_runtime.RuntimeTest.test_real_catalog_requires_real_credentials) ... ok
+test_real_tidal_route_reports_signed_out (test_runtime.RuntimeTest.test_real_tidal_route_reports_signed_out) ... ok
+test_start_does_not_create_duplicate_servers (test_runtime.RuntimeTest.test_start_does_not_create_duplicate_servers) ... ok
+test_static_path_cannot_escape_to_private_configuration (test_runtime.RuntimeTest.test_static_path_cannot_escape_to_private_configuration) ... ok
+test_status_does_not_pretend_an_account_is_authenticated (test_runtime.RuntimeTest.test_status_does_not_pretend_an_account_is_authenticated) ... ok
+test_unauthenticated_loopback_access_is_rejected (test_runtime.RuntimeTest.test_unauthenticated_loopback_access_is_rejected) ... ok
+test_upstream_health_really_runs (test_runtime.RuntimeTest.test_upstream_health_really_runs) ... ok
+test_wrong_origin_is_rejected (test_runtime.RuntimeTest.test_wrong_origin_is_rejected) ... ok
+test_wrong_token_is_rejected (test_runtime.RuntimeTest.test_wrong_token_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 1.080s
+
+OK

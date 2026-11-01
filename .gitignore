@@ -4,3 +4,9 @@
 local.properties
 *.jks
 *.keystore
+**/__pycache__/
+embedded-clash/src/main/jniLibs/**/*.so
+embedded-clash/**/.env
+embedded-clash/**/credentials.bin
+embedded-clash/**/*.wvd
+embedded-clash/**/embedded-env.json

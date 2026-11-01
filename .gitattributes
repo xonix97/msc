@@ -1,0 +1,4 @@
+# Keep imported source and recorded tool output in their original formatting.
+embedded-clash/src/main/python/clashflac/** -whitespace
+docs/evidence/embedded-clash/*.log -whitespace
+docs/evidence/embedded-clash/ffmpeg-*-elf.txt -whitespace

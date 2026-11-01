@@ -18,8 +18,16 @@ class ClashFlacCatalog {
     }
     fun search(baseUrl: String, query: String): List<CatalogTrack> {
         val base = validateBaseUrl(baseUrl)
-        val url = URI("$base/api/search?q=${URLEncoder.encode(query, "UTF-8")}&limit=20").toURL()
+        return request("$base/api/search?q=${URLEncoder.encode(query, "UTF-8")}&limit=20")
+    }
+    fun searchLocal(port: Int, token: String, query: String): List<CatalogTrack> {
+        require(port in 1..65535 && token.length >= 32) { "The local ClashFLAC server is not ready." }
+        return request("http://127.0.0.1:$port/api/search?q=${URLEncoder.encode(query, "UTF-8")}&limit=20", token)
+    }
+    private fun request(address: String, token: String? = null): List<CatalogTrack> {
+        val url = URI(address).toURL()
         val connection = url.openConnection() as HttpURLConnection
+        if (token != null) connection.setRequestProperty("X-Msc-Local-Token", token)
         connection.connectTimeout = 8000; connection.readTimeout = 10000
         connection.instanceFollowRedirects = false
         try {

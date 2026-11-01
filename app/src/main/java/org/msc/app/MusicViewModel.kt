@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.*
 import org.msc.app.data.*
 import org.msc.app.playback.*
 import org.msc.app.providers.*
+import org.msc.app.clash.ClashControl
 
 data class PlaybackUi(val connected: Boolean = false, val queue: List<Track> = emptyList(), val index: Int = -1,
     val position: Long = 0, val duration: Long = 0, val playing: Boolean = false, val buffering: Boolean = false,
@@ -30,7 +31,7 @@ data class PlaybackUi(val connected: Boolean = false, val queue: List<Track> = e
 }
 data class LyricsUi(val body: String = "", val offset: Long = 0)
 data class ProviderUi(val enabled: Boolean = false, val url: String = "", val loading: Boolean = false,
-    val results: List<CatalogTrack> = emptyList(), val error: String? = null)
+    val results: List<CatalogTrack> = emptyList(), val error: String? = null, val onDevice: Boolean = false)
 
 @OptIn(kotlinx.coroutines.FlowPreview::class)
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -49,7 +50,9 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         .flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val lyrics = MutableStateFlow(LyricsUi())
     val effects = MutableStateFlow(Bundle())
-    val provider = MutableStateFlow(ProviderUi(preferences.getBoolean("clashEnabled", false), preferences.getString("clashUrl", "").orEmpty()))
+    val provider = MutableStateFlow(ProviderUi(preferences.getBoolean("clashEnabled", false), preferences.getString("clashUrl", "").orEmpty(),
+        onDevice = BuildConfig.EMBEDDED_CLASH && preferences.getBoolean("clashOnDevice", false)))
+    val clashControl = ClashControl(application)
     private val catalog = ClashFlacCatalog()
     private val messages = Channel<String>(Channel.UNLIMITED)
     val events = messages.receiveAsFlow()
@@ -82,6 +85,10 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         viewModelScope.launch { query.debounce(400).collectLatest { remoteSearch(it) } }
+        if (BuildConfig.EMBEDDED_CLASH) {
+            clashControl.connect()
+            viewModelScope.launch { clashControl.state.map { it.state }.distinctUntilChanged().collect { if (provider.value.onDevice) remoteSearch() } }
+        }
     }
     fun notify(message: String) { messages.trySend(message) }
     fun foreground(active: Boolean) {
@@ -208,8 +215,15 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         try {
             val validated = if (enabled || url.isNotBlank()) catalog.validateBaseUrl(url) else ""
             preferences.edit().putString("clashUrl", validated).putBoolean("clashEnabled", enabled).apply()
+            preferences.edit().putBoolean("clashOnDevice", false).apply()
             provider.value = ProviderUi(enabled, validated); remoteSearch(query.value)
         } catch (e: Exception) { notify(e.message ?: "Invalid server address") }
+    }
+    fun useOnDeviceClash(enabled: Boolean) {
+        check(BuildConfig.EMBEDDED_CLASH)
+        preferences.edit().putBoolean("clashOnDevice", enabled).putBoolean("clashEnabled", enabled).apply()
+        provider.value = provider.value.copy(onDevice = enabled, enabled = enabled, results = emptyList(), error = null)
+        remoteSearch()
     }
     fun remoteSearch(q: String = query.value) {
         remoteJob?.cancel()
@@ -218,7 +232,13 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         remoteJob = viewModelScope.launch {
             provider.value = settings.copy(loading = true, error = null)
             try {
-                val results = withContext(Dispatchers.IO) { catalog.search(settings.url, q.trim()) }
+                val results = withContext(Dispatchers.IO) {
+                    if (settings.onDevice) {
+                        val local = clashControl.state.value
+                        check(local.state == "RUNNING") { "Start the on-device ClashFLAC server in Settings." }
+                        catalog.searchLocal(local.port, local.token, q.trim())
+                    } else catalog.search(settings.url, q.trim())
+                }
                 ensureActive(); provider.value = settings.copy(results = results)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
@@ -228,6 +248,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     }
     override fun onCleared() {
         getApplication<Application>().contentResolver.unregisterContentObserver(observer)
+        clashControl.close()
         MediaController.releaseFuture(future); super.onCleared()
     }
 }

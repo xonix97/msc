@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 import org.msc.app.LrcParser
 import org.msc.app.LyricLine
 import org.msc.app.MusicViewModel
+import org.msc.app.BuildConfig
 import org.msc.app.PlaybackUi
 import org.msc.app.data.Playlist
 import org.msc.app.data.Track
@@ -158,9 +159,10 @@ import org.msc.app.data.Track
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable internal fun SettingsSheet(model: MusicViewModel, onDismiss: () -> Unit, onSoundSettings: () -> Unit, onImportFolder: () -> Unit) {
+@Composable internal fun SettingsSheet(model: MusicViewModel, onDismiss: () -> Unit, onSoundSettings: () -> Unit, onImportFolder: () -> Unit, onStartClash: () -> Unit) {
     val reduced by model.reducedMotion.collectAsStateWithLifecycle()
     val provider by model.provider.collectAsStateWithLifecycle()
+    val local by model.clashControl.state.collectAsStateWithLifecycle()
     var url by rememberSaveable { mutableStateOf(provider.url) }
     var enabled by rememberSaveable { mutableStateOf(provider.enabled) }
     var connectionMessage by rememberSaveable { mutableStateOf<String?>(null) }
@@ -175,6 +177,19 @@ import org.msc.app.data.Track
             item { TextButton(onClick = onImportFolder) { Text("Import music folder") } }
             item { TextButton(onClick = model::rescanFolders) { Text("Rescan saved folders") } }
             item { HorizontalDivider(Modifier.padding(vertical = 16.dp)); Text("ClashFLAC", style = MaterialTheme.typography.titleLarge) }
+            if (BuildConfig.EMBEDDED_CLASH) {
+                item { Text("On this phone · ${local.state.lowercase().replaceFirstChar { it.uppercase() }}", Modifier.padding(vertical = 12.dp), style = MaterialTheme.typography.titleMedium) }
+                local.error?.let { message -> item { Text(message, color = MaterialTheme.colorScheme.error) } }
+                item { Text("The real ClashFLAC backend runs in a separate local process with a persistent notification. Provider accounts and your own client configuration are required. No credentials or device keys are bundled.", style = MaterialTheme.typography.bodySmall) }
+                item { Row {
+                    Button(enabled = local.state !in listOf("STARTING", "RUNNING"), onClick = onStartClash) { Text("Start server") }
+                    Spacer(Modifier.width(8.dp))
+                    OutlinedButton(enabled = local.state in listOf("STARTING", "RUNNING"), onClick = { model.clashControl.stop() }) { Text("Stop server") }
+                } }
+                item { Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Use on-device catalog", Modifier.weight(1f)); Switch(provider.onDevice, model::useOnDeviceClash)
+                } }
+            }
             item { Text("Connect a server you are authorized to use. This version supports its catalog search only. Streaming and downloads are unavailable.", Modifier.padding(vertical = 12.dp), style = MaterialTheme.typography.bodyMedium) }
             item { OutlinedTextField(url, { url = it }, label = { Text("ClashFLAC HTTPS server URL") }, placeholder = { Text("https://your-server.example") }, singleLine = true, modifier = Modifier.fillMaxWidth()) }
             item { Row(Modifier.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -188,7 +203,7 @@ import org.msc.app.data.Track
                 } catch (e: Exception) { connectionMessage = e.message ?: "Check your server address." }
             }) { Text("Save connection") } }
             connectionMessage?.let { message -> item { Text(message, Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodySmall) } }
-            item { HorizontalDivider(Modifier.padding(vertical = 16.dp)); Text("msc · 0.2.0", style = MaterialTheme.typography.titleMedium) }
+            item { HorizontalDivider(Modifier.padding(vertical = 16.dp)); Text("msc · ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.titleMedium) }
             item { Text("Your files stay yours. Importing, favorites and playlists do not change or delete your original audio.", Modifier.padding(vertical = 12.dp), style = MaterialTheme.typography.bodySmall) }
         }
     }

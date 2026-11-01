@@ -1,0 +1,6 @@
+Initial dependency probe: Python 3.12, upstream requirements; final port selects Python 3.11.
+Looking in indexes: https://pypi.org/simple, https://chaquo.com/pypi-13.1
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'OSError('Tunnel connection failed: 403 Forbidden')': /pypi-13.1/fastapi/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'OSError('Tunnel connection failed: 403 Forbidden')': /pypi-13.1/fastapi/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'OSError('Tunnel connection failed: 403 Forbidden')': /pypi-13.1/brotli/
+ERROR: No matching distribution found for brotli

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
 }
+val embeddedClash = providers.gradleProperty("msc.embedClash").getOrElse("false").toBoolean()
 android {
     namespace = "org.msc.app"
     compileSdk = 36
@@ -9,17 +10,20 @@ android {
         applicationId = providers.gradleProperty("msc.applicationId").getOrElse("org.msc.app")
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0-local"
+        versionCode = if (embeddedClash) 3 else 2
+        versionName = if (embeddedClash) "0.3.0-embedded-alpha" else "0.2.0-local"
+        buildConfigField("boolean", "EMBEDDED_CLASH", embeddedClash.toString())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
+    packaging { jniLibs.useLegacyPackaging = embeddedClash }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
 dependencies {
+    if (embeddedClash) implementation(project(":embedded-clash"))
     implementation(platform("androidx.compose:compose-bom:2026.03.01"))
     implementation("androidx.activity:activity-compose:1.11.0")
     implementation("androidx.compose.material3:material3")

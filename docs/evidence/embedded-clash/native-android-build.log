@@ -1,0 +1,105 @@
+Starting a Gradle Daemon, 1 incompatible Daemon could not be reused, use --status for details
+
+> Configure project :
+w: file:///workspace/msc/embedded-clash/native-probe/build.gradle.kts:12:42: 'fun srcDir(srcDir: Any): Any' is deprecated. Use `directories` mutable set instead.
+
+> Task :preBuild UP-TO-DATE
+> Task :preDebugBuild UP-TO-DATE
+> Task :generateDebugResources
+> Task :packageDebugResources
+> Task :processDebugNavigationResources
+> Task :javaPreCompileDebug
+> Task :checkDebugAarMetadata
+> Task :mapDebugSourceSetPaths
+> Task :parseDebugLocalResources
+> Task :compileDebugNavigationResources
+> Task :mergeDebugResources
+> Task :createDebugCompatibleScreenManifests
+> Task :extractDeepLinksDebug
+> Task :generateDebugRFile
+
+> Task :processDebugMainManifest
+/workspace/msc/embedded-clash/native-probe/src/main/AndroidManifest.xml:2:50-82 Warning:
+	android:extractNativeLibs should not be specified in this source AndroidManifest.xml file. See https://d.android.com/guide/topics/manifest/application-element#extractNativeLibs for more information.
+The AGP Upgrade Assistant can remove the attribute from the AndroidManifest.xml file and update the build file accordingly. See https://d.android.com/studio/build/agp-upgrade-assistant for more information.
+
+> Task :compileDebugKotlin NO-SOURCE
+> Task :compileDebugJavaWithJavac NO-SOURCE
+> Task :processDebugManifest
+> Task :preDebugAndroidTestBuild SKIPPED
+> Task :generateDebugAndroidTestResources
+> Task :packageDebugAndroidTestResources
+> Task :processDebugManifestForPackage
+> Task :processDebugAndroidTestNavigationResources
+> Task :generateDebugAssets UP-TO-DATE
+> Task :javaPreCompileDebugAndroidTest
+> Task :parseDebugAndroidTestLocalResources
+> Task :mergeDebugAssets
+> Task :generateDebugAndroidTestRFile
+> Task :compressDebugAssets
+> Task :processDebugResources
+> Task :generateDebugGlobalSynthetics
+> Task :compressDebugJavaRes NO-SOURCE
+> Task :bundleDebugClassesToCompileJar
+> Task :mergeDebugJavaResource
+> Task :compileDebugAndroidTestKotlin NO-SOURCE
+> Task :compileDebugAndroidTestJavaWithJavac
+> Task :desugarDebugFileDependencies
+> Task :checkDebugDuplicateClasses
+> Task :dexBuilderDebug
+> Task :mergeLibDexDebug
+> Task :mergeProjectDexDebug
+> Task :mergeDebugJniLibFolders
+> Task :mergeDebugNativeLibs
+> Task :validateSigningDebug
+> Task :writeDebugAppMetadata
+
+> Task :stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libmsc_ffmpeg.so. Run with --info option to learn more.
+
+> Task :writeDebugSigningConfigVersions
+> Task :generateDebugAndroidTestAssets UP-TO-DATE
+> Task :mergeDebugAndroidTestAssets
+> Task :compressDebugAndroidTestAssets
+> Task :mergeExtDexDebug
+> Task :generateDebugAndroidTestGlobalSynthetics
+> Task :compressDebugAndroidTestJavaRes NO-SOURCE
+> Task :mergeDebugAndroidTestJavaResource
+> Task :checkDebugAndroidTestDuplicateClasses
+> Task :desugarDebugAndroidTestFileDependencies
+> Task :packageDebug
+> Task :createDebugApkListingFileRedirect
+> Task :mergeLibDexDebugAndroidTest
+> Task :checkDebugAndroidTestAarMetadata
+> Task :mapDebugAndroidTestSourceSetPaths
+> Task :compileDebugAndroidTestNavigationResources
+> Task :mergeDebugAndroidTestManifest
+> Task :processDebugAndroidTestManifest
+> Task :mergeDebugAndroidTestJniLibFolders
+> Task :mergeDebugAndroidTestResources
+> Task :mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :validateSigningDebugAndroidTest
+> Task :writeDebugAndroidTestSigningConfigVersions
+> Task :mergeExtDexDebugAndroidTest
+> Task :processDebugAndroidTestResources
+> Task :dexBuilderDebugAndroidTest
+> Task :mergeProjectDexDebugAndroidTest
+> Task :packageDebugAndroidTest
+> Task :createDebugAndroidTestApkListingFileRedirect
+
+> Task :connectedDebugAndroidTest
+additionalTestOutput is not supported on this device running API level 28 because the additional test output directory could not be found
+Running tests on devices: msc-api28(AVD) - 9
+
+[Incubating] Problems report is available at: file:///workspace/msc/embedded-clash/native-probe/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.8.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 19s
+65 actionable tasks: 65 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.2/userguide/configuration_cache_enabling.html

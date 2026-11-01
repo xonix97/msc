@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="2" failures="0" errors="0" skipped="0" time="0.000" timestamp="2026-11-01T18:36:29" hostname="localhost">
+  <testsuite name="org.msc.nativeprobe.NativeFfmpegTest" tests="2" failures="0" errors="0" skipped="0" time="1.307" timestamp="2026-11-01T18:36:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="wavFlacWavRoundTripPreservesEveryPcmSample" classname="org.msc.nativeprobe.NativeFfmpegTest" time="1.128" />
+    <testcase name="nativeExecutableReportsExpectedVersion" classname="org.msc.nativeprobe.NativeFfmpegTest" time="0.179" />
+  </testsuite>
+</testsuites>

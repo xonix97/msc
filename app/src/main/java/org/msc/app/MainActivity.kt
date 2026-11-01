@@ -41,6 +41,10 @@ class MainActivity : ComponentActivity() {
     private val musicPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) model.scan() else model.notify("Music access was denied. You can still import files using the system picker.")
     }
+    private val serverNotificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (!granted) model.notify("Server notifications are off. You can stop the engine from Settings or Android's active-app controls.")
+        model.clashControl.start()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lyricsTarget = savedInstanceState?.getString("lyricsTarget")
@@ -56,6 +60,11 @@ class MainActivity : ComponentActivity() {
             },
             onImportLyrics = { uri -> lyricsTarget = uri; lyricsPicker.launch(arrayOf("*/*")) },
             onSoundSettings = { startActivity(Intent(android.provider.Settings.ACTION_SOUND_SETTINGS)) },
+            onStartClash = {
+                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                    serverNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                else model.clashControl.start()
+            },
         ) }
     }
     override fun onStart() { super.onStart(); model.foreground(true) }
