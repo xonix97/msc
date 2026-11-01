@@ -7,3 +7,5 @@ Requirements: JDK 21, Android SDK platform 36/build tools 36.0.0 and an Android 
 See docs/ARCHITECTURE.md, docs/TEST_PLAN.md and docs/TEST_REPORT.md for scope and evidence. The project name has not been cleared for release. No publication or production signing has occurred.
 
 After a fresh connected test run, execute `python3 scripts/verify_android_results.py`; the current runner can return zero even when the device failed and no tests ran. Delete only the generated `app/build/outputs/androidTest-results/connected` directory before rerunning to avoid stale results.
+
+Download the current **debug foundation build** and its checksums from [releases/](releases/). This build is not a functional music player; Android runtime validation remains pending.
