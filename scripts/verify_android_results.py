@@ -6,8 +6,8 @@ import xml.etree.ElementTree as ET
 root = Path(__file__).resolve().parents[1]
 files = list((root / "app/build/outputs/androidTest-results/connected/debug").glob("TEST-*.xml"))
 expected = {
-    "org.discnest.app.FoundationTest",
-    "org.discnest.app.PlaybackFixtureTest",
+    "org.msc.app.FoundationTest",
+    "org.msc.app.PlaybackFixtureTest",
 }
 seen = set()
 count = 0

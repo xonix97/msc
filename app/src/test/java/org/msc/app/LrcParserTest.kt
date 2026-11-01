@@ -1,4 +1,4 @@
-package org.discnest.app
+package org.msc.app
 
 import org.junit.Assert.*
 import org.junit.Test

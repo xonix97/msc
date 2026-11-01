@@ -1,4 +1,4 @@
-package org.discnest.app
+package org.msc.app
 
 data class LyricLine(val timeMs: Long, val text: String)
 

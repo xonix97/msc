@@ -1,4 +1,4 @@
-package org.discnest.app
+package org.msc.app
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText

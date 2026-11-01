@@ -1,4 +1,4 @@
-package org.discnest.app
+package org.msc.app
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

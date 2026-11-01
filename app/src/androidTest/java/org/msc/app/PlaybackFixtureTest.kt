@@ -1,4 +1,4 @@
-package org.discnest.app
+package org.msc.app
 
 import android.net.Uri
 import androidx.media3.common.MediaItem

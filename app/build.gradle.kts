@@ -3,10 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 android {
-    namespace = "org.discnest.app"
+    namespace = "org.msc.app"
     compileSdk = 36
     defaultConfig {
-        applicationId = providers.gradleProperty("discnest.applicationId").getOrElse("org.discnest.app")
+        applicationId = providers.gradleProperty("msc.applicationId").getOrElse("org.msc.app")
         minSdk = 26
         targetSdk = 36
         versionCode = 1
