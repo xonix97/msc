@@ -13,6 +13,13 @@ expected = {
     "org.msc.app.LibraryPersistenceTest#realAudioMetadataFavoritesPlaylistAndLyricsSurviveReopen",
     "org.msc.app.ServicePlaybackTest#serviceDecodesPausesSeeksKeepsSessionWhenDiscChangesAndPlaysInBackground",
     "org.msc.app.ProviderContractTest#parsesDocumentedMetadataWithoutTreatingCatalogUrlAsAudio",
+    "org.msc.app.JioSaavnTest#parsesContractChoosesSafeStreamAndPreservesSessionMetadata",
+    "org.msc.app.JioSaavnTest#unavailableSongsNeverAcquireFabricatedPlayableUrls",
+    "org.msc.app.JioSaavnTest#rejectsUntrustedStreamAndArtworkDestinations",
+    "org.msc.app.JioSaavnTest#realHttpSearchEncodesQueryAndHandlesRateLimitAndCancellation",
+    "org.msc.app.OnlineUiTest#songRowsPlayQueueAndKeepUnavailableSongsDisabled",
+    "org.msc.app.OnlineUiTest#offlineStateOffersWorkingRetryWithoutFakeSongs",
+    "org.msc.app.NetworkPlaybackTest#realHttpAudioUsesMediaSessionSeeksAndContinuesInBackground",
 }
 seen = set()
 count = 0

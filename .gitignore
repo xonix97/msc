@@ -4,3 +4,5 @@
 local.properties
 *.jks
 *.keystore
+**/__pycache__/
+embedded-clash/src/main/jniLibs/**/*.so

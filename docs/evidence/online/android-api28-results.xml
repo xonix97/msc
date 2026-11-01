@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="14" failures="0" errors="0" skipped="0" time="0.000" timestamp="2026-11-01T19:42:29" hostname="localhost">
+  <testsuite name="org.msc.app.FoundationTest" tests="1" failures="0" errors="0" skipped="0" time="71.628" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="launchesRealLibraryAndNavigates" classname="org.msc.app.FoundationTest" time="71.628" />
+  </testsuite>
+  <testsuite name="org.msc.app.JioSaavnTest" tests="4" failures="0" errors="0" skipped="0" time="1.567" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="parsesContractChoosesSafeStreamAndPreservesSessionMetadata" classname="org.msc.app.JioSaavnTest" time="0.219" />
+    <testcase name="unavailableSongsNeverAcquireFabricatedPlayableUrls" classname="org.msc.app.JioSaavnTest" time="0.460" />
+    <testcase name="realHttpSearchEncodesQueryAndHandlesRateLimitAndCancellation" classname="org.msc.app.JioSaavnTest" time="0.836" />
+    <testcase name="rejectsUntrustedStreamAndArtworkDestinations" classname="org.msc.app.JioSaavnTest" time="0.052" />
+  </testsuite>
+  <testsuite name="org.msc.app.LibraryPersistenceTest" tests="1" failures="0" errors="0" skipped="0" time="1.321" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="realAudioMetadataFavoritesPlaylistAndLyricsSurviveReopen" classname="org.msc.app.LibraryPersistenceTest" time="1.321" />
+  </testsuite>
+  <testsuite name="org.msc.app.NetworkPlaybackTest" tests="1" failures="0" errors="0" skipped="0" time="69.003" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="realHttpAudioUsesMediaSessionSeeksAndContinuesInBackground" classname="org.msc.app.NetworkPlaybackTest" time="69.003" />
+  </testsuite>
+  <testsuite name="org.msc.app.OnlineUiTest" tests="2" failures="0" errors="0" skipped="0" time="13.438" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="offlineStateOffersWorkingRetryWithoutFakeSongs" classname="org.msc.app.OnlineUiTest" time="5.824" />
+    <testcase name="songRowsPlayQueueAndKeepUnavailableSongsDisabled" classname="org.msc.app.OnlineUiTest" time="7.614" />
+  </testsuite>
+  <testsuite name="org.msc.app.PlaybackFixtureTest" tests="3" failures="0" errors="0" skipped="0" time="9.166" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="decodesOriginalFlac" classname="org.msc.app.PlaybackFixtureTest" time="3.937" />
+    <testcase name="decodesOriginalPcmAndAdvancesMediaTime" classname="org.msc.app.PlaybackFixtureTest" time="1.952" />
+    <testcase name="decodesOriginalMp3" classname="org.msc.app.PlaybackFixtureTest" time="3.277" />
+  </testsuite>
+  <testsuite name="org.msc.app.ProviderContractTest" tests="1" failures="0" errors="0" skipped="0" time="0.017" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="parsesDocumentedMetadataWithoutTreatingCatalogUrlAsAudio" classname="org.msc.app.ProviderContractTest" time="0.017" />
+  </testsuite>
+  <testsuite name="org.msc.app.ServicePlaybackTest" tests="1" failures="0" errors="0" skipped="0" time="47.796" timestamp="2026-11-01T19:42:29" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="serviceDecodesPausesSeeksKeepsSessionWhenDiscChangesAndPlaysInBackground" classname="org.msc.app.ServicePlaybackTest" time="47.796" />
+  </testsuite>
+</testsuites>

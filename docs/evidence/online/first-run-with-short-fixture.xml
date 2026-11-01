@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="14" failures="1" errors="0" skipped="0" time="0.000" timestamp="2026-11-01T19:05:58" hostname="localhost">
+  <testsuite name="org.msc.app.FoundationTest" tests="1" failures="0" errors="0" skipped="0" time="42.571" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="launchesRealLibraryAndNavigates" classname="org.msc.app.FoundationTest" time="42.571" />
+  </testsuite>
+  <testsuite name="org.msc.app.JioSaavnTest" tests="4" failures="0" errors="0" skipped="0" time="0.954" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="parsesContractChoosesSafeStreamAndPreservesSessionMetadata" classname="org.msc.app.JioSaavnTest" time="0.168" />
+    <testcase name="unavailableSongsNeverAcquireFabricatedPlayableUrls" classname="org.msc.app.JioSaavnTest" time="0.134" />
+    <testcase name="realHttpSearchEncodesQueryAndHandlesRateLimitAndCancellation" classname="org.msc.app.JioSaavnTest" time="0.652" />
+    <testcase name="rejectsUntrustedStreamAndArtworkDestinations" classname="org.msc.app.JioSaavnTest" time="0.000" />
+  </testsuite>
+  <testsuite name="org.msc.app.LibraryPersistenceTest" tests="1" failures="0" errors="0" skipped="0" time="1.081" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="realAudioMetadataFavoritesPlaylistAndLyricsSurviveReopen" classname="org.msc.app.LibraryPersistenceTest" time="1.081" />
+  </testsuite>
+  <testsuite name="org.msc.app.NetworkPlaybackTest" tests="1" failures="1" errors="0" skipped="0" time="58.148" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="realHttpAudioUsesMediaSessionSeeksAndContinuesInBackground" classname="org.msc.app.NetworkPlaybackTest" time="58.148">
+      <failure>java.lang.AssertionError: HTTP music continues in background
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.msc.app.NetworkPlaybackTest.realHttpAudioUsesMediaSessionSeeksAndContinuesInBackground$lambda$13$await(NetworkPlaybackTest.kt:39)
+	at org.msc.app.NetworkPlaybackTest.realHttpAudioUsesMediaSessionSeeksAndContinuesInBackground(NetworkPlaybackTest.kt:51)
+</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="org.msc.app.OnlineUiTest" tests="2" failures="0" errors="0" skipped="0" time="15.239" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="offlineStateOffersWorkingRetryWithoutFakeSongs" classname="org.msc.app.OnlineUiTest" time="6.096" />
+    <testcase name="songRowsPlayQueueAndKeepUnavailableSongsDisabled" classname="org.msc.app.OnlineUiTest" time="9.143" />
+  </testsuite>
+  <testsuite name="org.msc.app.PlaybackFixtureTest" tests="3" failures="0" errors="0" skipped="0" time="7.310" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="decodesOriginalFlac" classname="org.msc.app.PlaybackFixtureTest" time="2.723" />
+    <testcase name="decodesOriginalPcmAndAdvancesMediaTime" classname="org.msc.app.PlaybackFixtureTest" time="1.653" />
+    <testcase name="decodesOriginalMp3" classname="org.msc.app.PlaybackFixtureTest" time="2.934" />
+  </testsuite>
+  <testsuite name="org.msc.app.ProviderContractTest" tests="1" failures="0" errors="0" skipped="0" time="0.057" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="parsesDocumentedMetadataWithoutTreatingCatalogUrlAsAudio" classname="org.msc.app.ProviderContractTest" time="0.057" />
+  </testsuite>
+  <testsuite name="org.msc.app.ServicePlaybackTest" tests="1" failures="0" errors="0" skipped="0" time="54.614" timestamp="2026-11-01T19:05:58" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5554" />
+    </properties>
+    <testcase name="serviceDecodesPausesSeeksKeepsSessionWhenDiscChangesAndPlaysInBackground" classname="org.msc.app.ServicePlaybackTest" time="54.614" />
+  </testsuite>
+</testsuites>

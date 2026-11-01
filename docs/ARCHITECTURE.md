@@ -1,5 +1,13 @@
 # Architecture
 
+## Online source and glass presentation
+
+`JioSaavn` is a Kotlin client for the unofficial `saavn.dev` song-search contract. `MusicViewModel` keeps online search separate from phone-library search, debounces requests, cancels obsolete jobs, and exposes loading/error/empty states. Only HTTPS media/artwork links from JioSaavn CDN hosts become playable items. Catalog results with no usable URL remain disabled. `OnlineSearchResults` renders native rows with play/queue actions; no embedded browser or Python backend is involved.
+
+Online media items carry their provider, duration, original ID and artwork through Media3 metadata so the player, notification and queue use the same information. They use the existing `PlaybackService` for pause/seek/repeat/shuffle/background playback. The service selects network wake mode only for HTTP media. Expiring online URLs are excluded from saved local queues, with local indices remapped correctly. No online favorites, playlists or downloads are represented as completed features. `ArtworkCache` loads bounded HTTPS thumbnails independently from local metadata extraction.
+
+`LiquidGlass` supplies layered gradient backgrounds, translucent bordered panels, spring press feedback and a floating navigation capsule. Page changes use short crossfades. A composition-local reduced-motion flag disables navigation/press movement and page fading; disc animation also respects the app and system motion settings. Canvas gradients avoid live backdrop blur. Text colors are explicit on transparent surfaces. These techniques do not establish a frame-rate or accessibility certification.
+
 Native Kotlin, Jetpack Compose and AndroidX Media3 suit Android-only playback without a cross-framework lifecycle bridge. Flutter and React Native add native plugin boundaries for MediaStore, audio focus, effects and notifications without a required portability benefit.
 
 MscApplication owns a small application graph. LibraryRepository uses Android SQLiteOpenHelper with typed models, explicit schema versioning and transactional playlist ordering. This small app uses platform SQLite directly rather than introducing an ORM/code-generation toolchain; instrumentation verifies metadata ingestion and persistence across a database reopen. Favorites, counts, history, playlist order and lyrics are local. Upserting metadata preserves personal state.

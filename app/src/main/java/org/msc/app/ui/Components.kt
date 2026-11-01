@@ -2,6 +2,8 @@ package org.msc.app.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -40,8 +42,8 @@ import org.msc.app.data.Track
     Icon(painterResource(id), description, modifier.size(22.dp))
 }
 
-@Composable fun Art(model: MusicViewModel, uri: String, modifier: Modifier = Modifier) {
-    val art by produceState(Artwork(null), uri) { value = withContext(Dispatchers.IO) { model.artwork.load(uri) } }
+@Composable fun Art(model: MusicViewModel, uri: String, modifier: Modifier = Modifier, artworkUri: String = "") {
+    val art by produceState(Artwork(null), uri, artworkUri) { value = withContext(Dispatchers.IO) { model.artwork.load(uri, artworkUri) } }
     Box(modifier.clip(RoundedCornerShape(12.dp)).background(Color(0xff292e30)), contentAlignment = Alignment.Center) {
         val bitmap = art.bitmap
         if (bitmap != null) Image(bitmap.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
@@ -51,24 +53,29 @@ import org.msc.app.data.Track
 
 @Composable fun TrackRow(model: MusicViewModel, track: Track, onClick: () -> Unit, onAddToPlaylist: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
+    val source = remember { MutableInteractionSource() }
+    GlassPanel(Modifier.padding(horizontal = 20.dp, vertical = 4.dp).fillMaxWidth().liquidPress(source), RoundedCornerShape(22.dp)) {
     ListItem(
-        modifier = Modifier.clip(RoundedCornerShape(14.dp)).clickable(onClick = onClick),
+        modifier = Modifier.clickable(interactionSource = source, indication = LocalIndication.current, onClick = onClick),
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        leadingContent = { Art(model, track.uri, Modifier.size(52.dp)) },
+        leadingContent = { Art(model, track.uri, Modifier.size(52.dp), track.artworkUri) },
         headlineContent = { Text(track.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         supportingContent = { Text(track.artist, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         trailingContent = {
             Box {
                 IconButton(onClick = { menu = true }) { AppIcon("more", "Actions for ${track.title}") }
                 DropdownMenu(menu, onDismissRequest = { menu = false }) {
-                    DropdownMenuItem(text = { Text(if (track.favorite) "Remove favorite" else "Favorite") }, onClick = { menu = false; model.favorite(track) })
+                    if (track.source != "jiosaavn") DropdownMenuItem(text = { Text(if (track.favorite) "Remove favorite" else "Favorite") }, onClick = { menu = false; model.favorite(track) })
                     DropdownMenuItem(text = { Text("Add to queue") }, onClick = { menu = false; model.enqueue(track) })
-                    DropdownMenuItem(text = { Text("Add to playlist") }, onClick = { menu = false; onAddToPlaylist() })
-                    DropdownMenuItem(text = { Text("Remove from library") }, onClick = { menu = false; model.remove(track) })
+                    if (track.source != "jiosaavn") {
+                        DropdownMenuItem(text = { Text("Add to playlist") }, onClick = { menu = false; onAddToPlaylist() })
+                        DropdownMenuItem(text = { Text("Remove from library") }, onClick = { menu = false; model.remove(track) })
+                    }
                 }
             }
         },
     )
+    }
 }
 
 @Composable fun Disc(art: Artwork, cd: Boolean, angle: MutableFloatState, modifier: Modifier = Modifier) {

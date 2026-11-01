@@ -1,0 +1,31 @@
+{
+  "client_date": "2026-11-02",
+  "version": "0.3.0-online-alpha",
+  "version_code": 3,
+  "package": "org.msc.app",
+  "sha256": "46e023290054aa2ed69e50f97bafda30de93c0b1aaad83547e3cd3ca16f2186c",
+  "bytes": 14963133,
+  "android_tests_passed": 14,
+  "android_failures": 0,
+  "android_skipped": 0,
+  "jvm_tests_passed": 6,
+  "android_device": "API 28 AOSP x86_64 software emulator",
+  "lint_errors": 0,
+  "lint_warnings": 20,
+  "live_jiosaavn_verified": false,
+  "live_search_observed_status": 403,
+  "provider_contract_source": "sumitkolhe/jiosaavn-api@fc6bd132193d1fc71c2ab3db373e78b92884f67c",
+  "audio_used_for_tests": "Original CC0 tones only; AAC/MP4 network fixture on localhost",
+  "debug_certificate_sha256": "1942279f5e31f46d6a28f318d10c099f96d34589547f26759ce75657d212d3fe",
+  "final_runtime_gate": "14 exact cases passed after the glass contrast correction",
+  "screenshots": {
+    "home.png": "dac22afe65aacc116fc29972ce648a14f720b8086b378b14e31e2dc7f032e4bf",
+    "library.png": "f9dbcd4f68c72b050ee843c8597cca512da7a581a0b2fa6cf4346ed431bc9126",
+    "online-search.png": "d9a59752dff0f3728ac21c55b02c682aac33231dfeaf4ebc661b7beff2c4495f",
+    "player-cd.png": "207718fb4fec0ab951c0f8b451aaffb5f7312af663307cabe21efa621031dfeb",
+    "player-vinyl.png": "0abdb7730394893ac1cfbefffc6f061f77b08ed5606ae56a93304b7b9f376d17",
+    "search.png": "f27ce88329c401f0666d0a7fae5d39fa45b6aab645e24c3a49390fdac0a9ebb8",
+    "settings.png": "ff5b2523cf6cb324bb35f96776d905a4338dfcc6e9f0aac480decb1ff9fe0d1b"
+  },
+  "in_place_upgrade_verified": true
+}

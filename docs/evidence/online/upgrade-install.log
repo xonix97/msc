@@ -1,0 +1,8 @@
+releases/msc-0.2.0-local-debug.apk: 1 file pushed, 0 skipped. 77.9 MB/s (14669212 bytes in 0.180s)
+Performing Push Install
+Success
+releases/msc-0.3.0-online-alpha-debug.apk: 1 file pushed, 0 skipped. 37.9 MB/s (14963133 bytes in 0.377s)
+Performing Push Install
+Success
+    versionCode=3 minSdk=26 targetSdk=36
+    versionName=0.3.0-online-alpha

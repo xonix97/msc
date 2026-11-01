@@ -20,5 +20,8 @@ class FoundationTest {
         compose.onNodeWithText("Your library").assertIsDisplayed()
         compose.onNodeWithText("Search").performClick()
         compose.onNodeWithText("Search music").assertIsDisplayed()
+        compose.onNodeWithText("JioSaavn").performClick()
+        compose.onNodeWithText("Search for a song, artist or album to listen online.").assertIsDisplayed()
+        compose.onNodeWithText("On your phone").performClick()
     }
 }

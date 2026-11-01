@@ -17,6 +17,7 @@ data class Track(
     val favorite: Boolean = false,
     val lastPlayed: Long = 0,
     val playCount: Long = 0,
+    val artworkUri: String = "",
 )
 
 data class Playlist(val id: Long, val name: String, val tracks: List<String>)

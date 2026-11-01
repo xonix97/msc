@@ -3,6 +3,9 @@ package org.msc.app.ui
 import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -12,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -54,8 +58,8 @@ import org.msc.app.data.*
     var selectedPlaylist by rememberSaveable { mutableStateOf<Long?>(null) }
     val snackbar = remember { SnackbarHostState() }
     val current = tracks.firstOrNull { it.uri == playback.current?.uri } ?: playback.current
-    val art by produceState(Artwork(null), current?.uri) {
-        value = current?.let { withContext(Dispatchers.IO) { model.artwork.load(it.uri) } } ?: Artwork(null)
+    val art by produceState(Artwork(null), current?.uri, current?.artworkUri) {
+        value = current?.let { withContext(Dispatchers.IO) { model.artwork.load(it.uri, it.artworkUri) } } ?: Artwork(null)
     }
     val accent by animateColorAsState(Color(art.accent), label = "Artwork accent")
     val angle = rememberSaveable { mutableFloatStateOf(0f) }
@@ -73,16 +77,18 @@ import org.msc.app.data.*
     }
     LaunchedEffect(model) { model.events.collect { snackbar.showSnackbar(it) } }
     BackHandler(destination != "Home") { destination = "Home" }
+    CompositionLocalProvider(LocalLiquidMotion provides (!reduced && !systemReduced)) {
     MaterialTheme(colorScheme = darkColorScheme(primary = accent, onPrimary = Color(0xff111719),
         background = Color(0xff101719), surface = Color(0xff161f22), surfaceVariant = Color(0xff242e32),
         onSurface = Color(0xfff1f1e9), onSurfaceVariant = Color(0xffb9c3c6),
         secondaryContainer = accent.copy(alpha = .2f), onSecondaryContainer = accent)) {
-        Scaffold(snackbarHost = { SnackbarHost(snackbar) }, containerColor = Color(0xff101719), bottomBar = {
-            if (destination != "Player") Column {
-                if (current != null) Surface(color = Color(0xff273337), tonalElevation = 8.dp,
-                    modifier = Modifier.padding(horizontal = 12.dp).clickable { destination = "Player" }, shape = RoundedCornerShape(18.dp)) {
+        Box(Modifier.fillMaxSize()) {
+        LiquidBackdrop(accent)
+        Scaffold(snackbarHost = { SnackbarHost(snackbar) }, containerColor = Color.Transparent, contentColor = MaterialTheme.colorScheme.onSurface, bottomBar = {
+            if (destination != "Player") Column(Modifier.navigationBarsPadding().padding(horizontal = 16.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (current != null) GlassPanel(Modifier.fillMaxWidth().clickable { destination = "Player" }, shape = RoundedCornerShape(25.dp)) {
                     Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Art(model, current.uri, Modifier.size(44.dp))
+                        Art(model, current.uri, Modifier.size(44.dp), current.artworkUri)
                         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                             Text(current.title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleSmall)
                             Text(current.artist, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
@@ -91,39 +97,37 @@ import org.msc.app.data.*
                         IconButton(onClick = model::next) { AppIcon("next", "Next track") }
                     }
                 }
-                NavigationBar(containerColor = Color(0xff101719)) {
-                    listOf("Home" to "home", "Library" to "library", "Search" to "search", "Player" to "disc").forEach { (name, icon) ->
-                        NavigationBarItem(selected = destination == name, onClick = { destination = name }, icon = { AppIcon(icon) }, label = { Text(name) },
-                            colors = NavigationBarItemDefaults.colors(selectedIconColor = accent, selectedTextColor = accent,
-                                indicatorColor = accent.copy(alpha = .18f)))
-                    }
-                }
+                LiquidNavigation(destination) { destination = it }
             }
         }) { insets ->
-            Column(Modifier.fillMaxSize().padding(insets).background(Brush.verticalGradient(listOf(accent.copy(alpha = .09f), Color.Transparent)))) {
+            Column(Modifier.fillMaxSize().padding(insets)) {
                 Row(Modifier.fillMaxWidth().padding(start = 24.dp, end = 12.dp, top = 10.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                     if (destination == "Player") IconButton(onClick = { destination = "Home" }) { AppIcon("back", "Back to Home") }
                     Column(Modifier.weight(1f)) {
                         Text("msc", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Black)
                         Text("MUSIC, IN YOUR HANDS", style = MaterialTheme.typography.labelSmall, color = accent)
                     }
-                    IconButton(onClick = { showSettings = true }) { AppIcon("settings", "Settings") }
+                    GlassPanel(shape = RoundedCornerShape(20.dp)) { IconButton(onClick = { showSettings = true }) { AppIcon("settings", "Settings") } }
                 }
                 if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-                when (destination) {
+                Crossfade(destination, modifier = Modifier.weight(1f).fillMaxWidth(),
+                    animationSpec = if (!reduced && !systemReduced) tween(180) else snap(), label = "Page flow") { page ->
+                when (page) {
                     "Home" -> HomeScreen(model, tracks, current, onImport, onScan,
                         { track, queue ->
                             if (track.uri == playback.current?.uri) { if (!playback.playing) model.togglePlay() }
                             else model.play(track, queue)
                             destination = "Player"
-                        }, { addTrack = it })
+                        }, { addTrack = it }, { model.useOnlineSearch(true); destination = "Search" })
                     "Library" -> LibraryScreen(model, tracks, playlists, onImport, onScan,
                         { track, queue -> model.play(track, queue) }, { addTrack = it }, { createPlaylist = true }, { selectedPlaylist = it })
                     "Search" -> SearchScreen(model, { track, queue -> model.play(track, queue) }, { addTrack = it }, { showSettings = true })
                     else -> PlayerScreen(model, playback, current, art, angle, mode, onImport, onScan,
                         { showQueue = true }, { showLyrics = true }, { model.requestEffects(); showEffects = true }, { addTrack = it })
                 }
+                }
             }
+        }
         }
         if (showSettings) SettingsSheet(model, onDismiss = { showSettings = false }, onSoundSettings, onImportFolder)
         if (showQueue) QueueSheet(model, playback, onDismiss = { showQueue = false })
@@ -141,6 +145,7 @@ import org.msc.app.data.*
             model.createPlaylist(name, addTrack); createPlaylist = false; addTrack = null
         })
     }
+    }
 }
 
 @Composable private fun ImportActions(onImport: () -> Unit, onScan: () -> Unit) {
@@ -150,18 +155,25 @@ import org.msc.app.data.*
     }
 }
 
-@Composable private fun EmptyMusic(onImport: () -> Unit, onScan: () -> Unit) {
-    Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text("Your music.\nA different spin.", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.SemiBold)
-        Text("Bring your own MP3, FLAC, WAV, M4A or other supported audio. Your library stays on your phone.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+@Composable private fun EmptyMusic(onImport: () -> Unit, onScan: () -> Unit, onOnline: (() -> Unit)? = null) {
+    Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        if (onOnline != null) GlassPanel(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("A world of music.\nA different spin.", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.SemiBold)
+                Text("Find your next favourite with JioSaavn.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Button(onClick = onOnline) { AppIcon("search"); Spacer(Modifier.width(8.dp)); Text("Explore JioSaavn") }
+            }
+        } else Text("Your music.\nA different spin.", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.SemiBold)
+        Text("Your own files", style = MaterialTheme.typography.titleLarge)
+        Text("Import your audio to listen offline. Your files stay on your phone.", color = MaterialTheme.colorScheme.onSurfaceVariant)
         ImportActions(onImport, onScan)
-        Text("No account needed. No connection required.", style = MaterialTheme.typography.bodySmall)
+        Text("Local playback needs no account or connection.", style = MaterialTheme.typography.bodySmall)
     }
 }
 
 @Composable private fun HomeScreen(model: MusicViewModel, tracks: List<Track>, current: Track?, onImport: () -> Unit,
-    onScan: () -> Unit, onPlay: (Track, List<Track>) -> Unit, onAdd: (Track) -> Unit) {
-    if (tracks.isEmpty()) { EmptyMusic(onImport, onScan); return }
+    onScan: () -> Unit, onPlay: (Track, List<Track>) -> Unit, onAdd: (Track) -> Unit, onOnline: () -> Unit) {
+    if (tracks.isEmpty()) { EmptyMusic(onImport, onScan, onOnline); return }
     val recent = remember(tracks) { tracks.filter { it.lastPlayed > 0 }.sortedByDescending { it.lastPlayed }.take(8) }
     val added = remember(tracks) { tracks.sortedByDescending { it.addedAt }.take(20).groupBy { it.album } }
     LazyColumn(contentPadding = PaddingValues(bottom = 24.dp)) {
@@ -169,6 +181,13 @@ import org.msc.app.data.*
             Text("Make yourself at home.", style = MaterialTheme.typography.headlineMedium)
             Text("${tracks.size} tracks · ${tracks.map { it.album }.distinct().size} albums", color = MaterialTheme.colorScheme.onSurfaceVariant)
             ImportActions(onImport, onScan)
+        } }
+        item { GlassPanel(Modifier.padding(horizontal = 20.dp).fillMaxWidth()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Something new to love.", style = MaterialTheme.typography.titleLarge)
+                Text("Search songs and artists online.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                TextButton(onClick = onOnline) { Text("Explore JioSaavn"); Spacer(Modifier.width(8.dp)); AppIcon("search") }
+            }
         } }
         if (current != null) {
             item { SectionTitle("Continue listening") }
@@ -247,11 +266,21 @@ import org.msc.app.data.*
     val query by model.query.collectAsStateWithLifecycle()
     val results by model.searchResults.collectAsStateWithLifecycle()
     val provider by model.provider.collectAsStateWithLifecycle()
+    val online by model.online.collectAsStateWithLifecycle()
     val playlists by model.playlists.collectAsStateWithLifecycle()
     Column {
+        Row(Modifier.padding(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(!online.active, { model.useOnlineSearch(false) }, label = { Text("On your phone") })
+            FilterChip(online.active, { model.useOnlineSearch(true) }, label = { Text("JioSaavn") })
+        }
         OutlinedTextField(query, { model.query.value = it }, label = { Text("Search music") }, placeholder = { Text("Tracks, artists, albums, playlists") },
             leadingIcon = { AppIcon("search") }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), shape = RoundedCornerShape(18.dp))
-        if (query.isBlank()) Text("Find something in your collection, or configure ClashFLAC catalog search in Settings.", Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        if (online.active) {
+            OnlineSearchResults(online, query, model::searchOnline,
+                onPlay = { song -> song.track()?.let { track -> onPlay(track, online.results.mapNotNull { it.track() }) } },
+                onQueue = { song -> song.track()?.let(model::enqueue) },
+                artwork = { song -> Art(model, song.streamUrl.orEmpty(), Modifier.size(52.dp), song.artworkUrl) })
+        } else if (query.isBlank()) Text("Find something in your collection, or choose JioSaavn to search online.", Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
         else LazyColumn {
             item { SectionTitle("On your phone · ${results.size}") }
             if (results.isEmpty()) item { Text("No local matches.", Modifier.padding(horizontal = 24.dp)) }
@@ -291,7 +320,9 @@ import org.msc.app.data.*
             FilterChip(mode == "Vinyl", { model.setMode("Vinyl") }, label = { Text("Vinyl") })
             FilterChip(mode == "CD", { model.setMode("CD") }, label = { Text("CD") })
         } }
-        item { Disc(art, mode == "CD", angle, Modifier.padding(vertical = 8.dp).size(discSize)) }
+        item { GlassPanel(Modifier.padding(vertical = 12.dp), RoundedCornerShape(44.dp)) {
+            Disc(art, mode == "CD", angle, Modifier.padding(16.dp).size((discSize - 32.dp).coerceAtLeast(80.dp)))
+        } }
         item { Text(current.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis) }
         item { Text(current.artist, Modifier.padding(top = 5.dp, bottom = 16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant) }
         if (playback.buffering) item { LinearProgressIndicator(Modifier.fillMaxWidth()) }
@@ -306,20 +337,23 @@ import org.msc.app.data.*
                 Text(timeLabel(playback.duration), style = MaterialTheme.typography.labelSmall)
             }
         }
-        item { Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+        item { GlassPanel(Modifier.fillMaxWidth().padding(vertical = 12.dp)) {
+        Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
             TextButton(onClick = model::shuffle) { Text(if (playback.shuffle) "Shuffle ✓" else "Shuffle", style = MaterialTheme.typography.labelSmall) }
             IconButton(onClick = model::previous) { AppIcon("previous", "Previous track") }
             FilledIconButton(onClick = model::togglePlay, modifier = Modifier.size(68.dp)) { AppIcon(if (playback.playing) "pause" else "play", if (playback.playing) "Pause" else "Play") }
             IconButton(onClick = model::next) { AppIcon("next", "Next track") }
             TextButton(onClick = model::repeat) { Text(when(playback.repeat) { 1 -> "Repeat 1"; 2 -> "Repeat all"; else -> "Repeat off" }, style = MaterialTheme.typography.labelSmall) }
         } }
+        }
         item { Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            TextButton(onClick = { model.favorite(current) }) { Text(if (current.favorite) "Liked ♥" else "Like ♡") }
+            if (current.source != "jiosaavn") TextButton(onClick = { model.favorite(current) }) { Text(if (current.favorite) "Liked ♥" else "Like ♡") }
             TextButton(onClick = onQueue) { Text("Queue") }
             TextButton(onClick = onLyrics) { Text("Lyrics") }
             TextButton(onClick = onEffects) { Text("EQ") }
         } }
-        item { TextButton(onClick = { onAdd(current) }) { Text("Add to playlist") } }
+        if (current.source != "jiosaavn") item { TextButton(onClick = { onAdd(current) }) { Text("Add to playlist") } }
+        else item { Text("JioSaavn · Online streaming", Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall) }
     }
     }
 }

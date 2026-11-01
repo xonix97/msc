@@ -31,6 +31,8 @@ data class PlaybackUi(val connected: Boolean = false, val queue: List<Track> = e
 data class LyricsUi(val body: String = "", val offset: Long = 0)
 data class ProviderUi(val enabled: Boolean = false, val url: String = "", val loading: Boolean = false,
     val results: List<CatalogTrack> = emptyList(), val error: String? = null)
+data class OnlineUi(val active: Boolean = false, val loading: Boolean = false,
+    val results: List<OnlineSong> = emptyList(), val error: String? = null)
 
 @OptIn(kotlinx.coroutines.FlowPreview::class)
 @androidx.annotation.OptIn(UnstableApi::class)
@@ -51,6 +53,9 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     val effects = MutableStateFlow(Bundle())
     val provider = MutableStateFlow(ProviderUi(preferences.getBoolean("clashEnabled", false), preferences.getString("clashUrl", "").orEmpty()))
     private val catalog = ClashFlacCatalog()
+    private val jioSaavn = JioSaavn()
+    val online = MutableStateFlow(OnlineUi())
+    private var onlineJob: Job? = null
     private val messages = Channel<String>(Channel.UNLIMITED)
     val events = messages.receiveAsFlow()
     private var controller: MediaController? = null
@@ -81,7 +86,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
-        viewModelScope.launch { query.debounce(400).collectLatest { remoteSearch(it) } }
+        viewModelScope.launch { query.debounce(400).collectLatest { if (online.value.active) searchOnline(it) else remoteSearch(it) } }
     }
     fun notify(message: String) { messages.trySend(message) }
     fun foreground(active: Boolean) {
@@ -94,7 +99,9 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         playback.value = PlaybackUi(true, queue,
             p.currentMediaItemIndex, p.currentPosition.coerceAtLeast(0), p.duration.coerceAtLeast(0), p.isPlaying,
             p.playbackState == Player.STATE_BUFFERING, p.shuffleModeEnabled, p.repeatMode,
-            p.playerError?.let { "Cannot play this file. It may be unavailable, unsupported or its permission was revoked. ${it.errorCodeName}" })
+            p.playerError?.let { if (p.currentMediaItem?.track()?.source == "jiosaavn")
+                "Could not stream this song. Check your connection, retry or choose another result. ${it.errorCodeName}"
+                else "Cannot play this file. It may be unavailable, unsupported or its permission was revoked. ${it.errorCodeName}" })
     }
     private fun player(block: (MediaController) -> Unit) {
         val p = controller
@@ -210,6 +217,33 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
             preferences.edit().putString("clashUrl", validated).putBoolean("clashEnabled", enabled).apply()
             provider.value = ProviderUi(enabled, validated); remoteSearch(query.value)
         } catch (e: Exception) { notify(e.message ?: "Invalid server address") }
+    }
+    fun useOnlineSearch(active: Boolean) {
+        onlineJob?.cancel(); remoteJob?.cancel()
+        online.value = OnlineUi(active = active)
+        if (active) searchOnline() else remoteSearch()
+    }
+    fun searchOnline(q: String = query.value) {
+        onlineJob?.cancel()
+        if (!online.value.active) return
+        if (q.trim().length < 2) { online.value = OnlineUi(active = true); return }
+        onlineJob = viewModelScope.launch {
+            online.value = OnlineUi(active = true, loading = true)
+            try {
+                val job = currentCoroutineContext()[Job]
+                val results = withContext(Dispatchers.IO) { jioSaavn.search(q) { job?.isActive == false } }
+                ensureActive(); online.value = OnlineUi(active = true, results = results)
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                val message = when(e) {
+                    is java.net.UnknownHostException, is java.net.ConnectException -> "You’re offline or JioSaavn cannot be reached. Check your connection and retry."
+                    is java.net.SocketTimeoutException -> "JioSaavn took too long to respond. Retry in a moment."
+                    is org.json.JSONException -> "JioSaavn returned an unexpected response. Try again later."
+                    else -> e.message ?: "JioSaavn is unavailable. Try again later."
+                }
+                online.value = OnlineUi(active = true, error = message)
+            }
+        }
     }
     fun remoteSearch(q: String = query.value) {
         remoteJob?.cancel()

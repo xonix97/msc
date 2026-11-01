@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.Player
+import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -51,6 +52,10 @@ class PlaybackService : MediaSessionService() {
                 }
             }).build()
         player.addListener(object : Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                val network = mediaItem?.localConfiguration?.uri?.scheme in listOf("https", "http")
+                player.setWakeMode(if (network) C.WAKE_MODE_NETWORK else C.WAKE_MODE_LOCAL)
+            }
             override fun onAudioSessionIdChanged(audioSessionId: Int) { effects.attach(audioSessionId) }
             override fun onEvents(p: Player, events: Player.Events) {
                 if (!restoring) persist()
@@ -79,8 +84,13 @@ class PlaybackService : MediaSessionService() {
         }
     }
     private fun persist() {
-        store.save(SavedPlayback((0 until player.mediaItemCount).map { player.getMediaItemAt(it).mediaId },
-            player.currentMediaItemIndex.coerceAtLeast(0), player.currentPosition, player.shuffleModeEnabled, player.repeatMode))
+        // Public stream links can expire. Keep online queues in the active session only.
+        val all = (0 until player.mediaItemCount).map { player.getMediaItemAt(it) }
+        val local = all.filter { it.localConfiguration?.uri?.scheme !in listOf("http", "https") }
+        val current = player.currentMediaItem
+        val index = local.indexOfFirst { it.mediaId == current?.mediaId }
+        store.save(SavedPlayback(local.map { it.mediaId }, index.coerceAtLeast(0),
+            if (index >= 0) player.currentPosition else 0, player.shuffleModeEnabled, player.repeatMode))
     }
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession = session
     override fun onDestroy() {

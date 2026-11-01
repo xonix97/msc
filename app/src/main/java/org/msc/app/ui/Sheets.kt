@@ -188,7 +188,7 @@ import org.msc.app.data.Track
                 } catch (e: Exception) { connectionMessage = e.message ?: "Check your server address." }
             }) { Text("Save connection") } }
             connectionMessage?.let { message -> item { Text(message, Modifier.padding(vertical = 8.dp), style = MaterialTheme.typography.bodySmall) } }
-            item { HorizontalDivider(Modifier.padding(vertical = 16.dp)); Text("msc · 0.2.0", style = MaterialTheme.typography.titleMedium) }
+            item { HorizontalDivider(Modifier.padding(vertical = 16.dp)); Text("msc · ${org.msc.app.BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.titleMedium) }
             item { Text("Your files stay yours. Importing, favorites and playlists do not change or delete your original audio.", Modifier.padding(vertical = 12.dp), style = MaterialTheme.typography.bodySmall) }
         }
     }

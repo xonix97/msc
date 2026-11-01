@@ -1,45 +1,42 @@
-# msc 0.2.0-local test report — 2026-11-01
+# msc 0.3.0-online-alpha verification — 2026-11-02
 
-## Result and scope
+This debug alpha adds native JioSaavn search/streaming and the glass UI. **6 JVM tests and 14 Android instrumentation cases passed**, with no failures, errors or skips in the successful full run. This is not proof that the public unofficial service works from this cloud worker: its live search request returned HTTP 403.
 
-The foundation status screen has been replaced with a local music player. **6 JVM tests and 7 real Android instrumentation tests passed; 0 failures, errors or skips in the final run.** This is a debug local-player build, not the fully completed original product release. Remaining capabilities and verification gaps are listed below.
+## Build and device
 
-## Environment and commands
+Temurin JDK 21.0.9+10, checksum-pinned Gradle 9.8.2, AGP 9.5.0, Compose BOM 2026.03.01 and Media3 1.11.1. SDK/target API 36, minimum API 26. The device is the API 28 AOSP x86_64 Pixel 2 emulator running without KVM, with software graphics, 1536 MiB RAM and two virtual cores. System animation scale was disabled for deterministic instrumentation. Neither those tests nor static screenshots establish physical-device frame rates.
 
-Debian 13 x86_64; Temurin JDK 21.0.9+10; checksum-pinned Gradle 9.8.2; AGP 9.5.0/Kotlin 2.2.10; Compose BOM 2026.03.01; Media3 1.11.1; SDK/target API 36, minimum API 26; build tools 36.0.0. Android emulator 37.2.13, AOSP Android 9/API 28 x86_64, Pixel 2 profile, AVD msc-api28, 1536 MiB RAM and two virtual cores. No /dev/kvm is available. The smaller official AOSP image booted with software emulation after the earlier API 35 attempt was unstable.
+Build/check command: `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest`. Lint reports **0 errors and 20 warnings**. Warnings are retained; they are not represented as a completed production audit.
 
-Boot command: `emulator @msc-api28 -no-window -no-audio -no-boot-anim -gpu swiftshader -accel off -no-snapshot -memory 1536 -cores 2`. ADB and `sys.boot_completed=1` established runtime readiness. System animations were disabled for deterministic UI tests. Software startup is slow; a standalone `am start -W` reported its wait timeout, but the app subsequently rendered and was exercised. An initial System UI ANR on this software emulator was dismissed; no application crash was observed in the successful test run. This does not establish a complete ANR/performance matrix.
+Runtime command: remove only generated `app/build/outputs/androidTest-results/connected`, run `./gradlew :app:connectedDebugAndroidTest`, then `python3 scripts/verify_android_results.py`. The verifier requires the exact 14 methods and rejects missing, empty, failed or skipped results. Actual logs/XML and the APK hash are in [evidence/online](../docs/evidence/online/).
 
-Build: `./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug`. Final layout build succeeded in 20s. Lint: **0 errors, 18 warnings** (11 UseKtx suggestions, 3 dependency updates, OldTargetApi, ModifierParameter, ExportedService and DataExtractionRules). The exported media session service is intentional for system media controls. Warnings are recorded, not presented as a completed production audit.
+## Test coverage
 
-Android: remove only generated `app/build/outputs/androidTest-results/connected`, run `./gradlew :app:connectedDebugAndroidTest`, then `python3 scripts/verify_android_results.py`. The verifier requires all seven exact cases and rejects missing, empty, failed or skipped results. See evidence/player-build.log, android-runtime.log and the current XML reports. The native runner reports aggregate XML time as zero; use the runner log for wall time rather than interpreting that as execution duration.
-
-## Executed tests
-
-| Suite | Passed | Behavior exercised |
+| Suite | Passed | Observed behavior |
 | --- | ---: | --- |
-| LrcParserTest | 3 | Fractional/repeated timestamps, malformed/overflow input, position-based seeking selection |
-| LibraryRulesTest | 3 | Accent-insensitive multiword metadata search, sorting, playlist-name validation |
-| FoundationTest | 1 | Actual app launch, removal of the old message, Home/Library/Search navigation |
-| LibraryPersistenceTest | 1 | Native WAV metadata import, duplicate handling, favorites/history/counts, playlist rename/entries/delete and lyrics/offset persistence across database reopen |
-| PlaybackFixtureTest | 3 | Actual ExoPlayer WAV, FLAC and MP3 preparation/decoding, advancing media time, pause and error checks |
-| ProviderContractTest | 1 | Documented ClashFLAC metadata schema and HTTPS/server-address validation; no live provider access |
-| ServicePlaybackTest | 1 | Real MediaSessionService playback, advancing position, pause, seek, queue reorder, shuffle/repeat setting, second-track playback, vinyl/CD switching without position/session reset, and playback while Activity is backgrounded |
+| LrcParserTest / LibraryRulesTest | 6 JVM | Timestamp parsing, local metadata search/sorting and playlist validation |
+| FoundationTest | 1 Android | Real app launch, glass Home/Library/Search navigation, JioSaavn selection and return to phone search |
+| LibraryPersistenceTest | 1 Android | Real audio metadata, favorites/history, playlists and lyrics survive repository reopen |
+| PlaybackFixtureTest | 3 Android | Actual WAV, FLAC and MP3 decoding and advancing media time |
+| ProviderContractTest | 1 Android | Existing ClashFLAC catalog contract and HTTPS validation |
+| ServicePlaybackTest | 1 Android | Real MediaSession playback, pause, seek, queue reorder, repeat/shuffle, disc switching and activity backgrounding |
+| JioSaavnTest | 4 Android | Documented response parsing, safe quality selection, metadata round trip, unavailable-song handling, destination validation, real local HTTP requests, query encoding, cancellation and HTTP 429 |
+| OnlineUiTest | 2 Android | Native song-row play/queue actions, disabled unavailable results and working offline retry |
+| NetworkPlaybackTest | 1 Android | Real HTTP AAC/MP4 decoding through the music service, pause/seek, actual position advancement after the Activity stops, and exclusion of expiring online URLs from saved local queues |
 
-The first Android attempt had four passes and one service-test failure caused by test cleanup calling MediaController.releaseFuture off its application thread. Cleanup was corrected to run on Main. The expanded suite then passed all seven cases, and passed again after layout changes. The failure log is retained in evidence/first-runtime-attempt.log. No assertion was disabled and an empty runner result was never accepted.
+The HTTP test serves only an original CC0 AAC/MP4 tone on `127.0.0.1`. It is not a provider song or a live CDN test. Test audio is confined to the test APK; the user APK was checked to contain no audio fixtures.
 
-## Standalone UI and artifact
+The first 14-case run had one failure: the three-second HTTP fixture ended before the slow emulator completed its Activity transition. Its log/XML are retained. The fixture was extended to 15 seconds with explicit repeat, and the assertion was strengthened to require at least 400 ms of new playback progress after the Activity reached its stopped state. All 14 then passed. No failed case was removed or skipped.
 
-A real permission-denial flow left import usable and displayed the appropriate explanation. After granting storage access, Scan device found two original test tracks through MediaStore. Actual artwork, local search, the mini player, both disc views and provider settings were inspected on Android. Player artwork was resized after screenshots showed that it pushed transport controls below the viewport. Final screenshots in docs/screenshots/ come from the real emulator using original generated tones/artwork. These samples are not bundled in the user APK.
+## UI and artifact
 
-APK: releases/msc-0.2.0-local-debug.apk. Application ID org.msc.app; versionCode 2; label msc. SHA-256 `cc419db62ad84655d07e38bc7ee966c014d8eebf3513f5467ce81db05c203bb0`. APK signature verification succeeds with v2 debug signing. Two Android user directories initially selected different debug keys; the final build uses the retained original key under ANDROID_USER_HOME=/workspace/android-home. Certificate compatibility was verified, and every ZIP payload entry matches the runtime-tested APK; only signing differs. A real installation of the old foundation APK followed by `adb install --no-streaming -r` of this APK both reported Success. Android confirms versionCode 2/versionName 0.2.0-local; see the upgrade and artifact-verification evidence. No key is committed and this is not production signing.
+Screenshot review caught inherited black text on the first transparent panels. The scaffold and glass surfaces now explicitly use the theme's foreground color. The updated Home, local library/search, online search and disc views were captured from the real app using original test material. The online screenshot is an empty search prompt; it does not fabricate a working live catalog.
 
-## Remaining limits
+Application ID `org.msc.app`, label **msc**, version code **3**, version name **0.3.0-online-alpha**. The APK is [msc-0.3.0-online-alpha-debug.apk](../releases/msc-0.3.0-online-alpha-debug.apk); its SHA-256 is in [SHA256SUMS](../releases/SHA256SUMS). It uses the retained debug certificate, SHA-256 `1942279f5e31f46d6a28f318d10c099f96d34589547f26759ce75657d212d3fe`, matching 0.2.0. A real 0.2.0 installation followed by an in-place 0.3.0 update succeeded. No signing key is committed. This is not a production-signed release or a GitHub Releases publication.
 
-- ClashFLAC catalog settings and adapter are implemented, disabled without an authorized HTTPS server. Its parser contract is tested; no live server/catalog access is verified. No permitted streaming/download contract or hosted endpoint has been established. Streaming, downloading and DRM-related routes are unavailable.
-- Crossfade and authorized downloads are not implemented. Queue transitions use Media3; acoustic gapless/crossfade timing and bit-perfect output are not verified. Advancing media timestamps and host-muted emulation do not prove audible output.
-- Audio effects use real Android Equalizer/BassBoost APIs with capability handling and stored preferences. Their audible response, full attachment/removal/persistence matrix and physical output routes have not been separately verified.
-- LRC parsing and lyrics persistence are tested; the complete import/highlight/auto-scroll/tap-to-seek UI matrix and embedded-lyrics extraction are not verified. Embedded extraction is not implemented.
-- SAF file/folder import, missing-file handling, live storage observation, paused queue restoration and playlist editing are implemented, but the complete picker/revocation/process-death/large-library/playlist UI matrix has not run. The persistence and service tests cover the narrower behaviors listed above.
-- API 26, Android 13+ permission behavior, latest runtime API, Bluetooth/headset/call/focus interruptions, lock-screen controls, large fonts, landscape, accessibility/performance profiling and the full offline acceptance matrix need further device/CI execution. Local playback has no network dependency, but a full network-disabled UI matrix has not run.
-- GitHub Actions is configured; hosted CI results have not been observed. The releases/ folder is a Git repository artifact location, not a GitHub Releases publication. Cloud install/start instructions are saved in a draft; review/save and publish the environment settings to retain the prepared setup. A fresh-task snapshot restore has not been independently tested.
+## Limits
+
+- Live JioSaavn catalog access, actual provider song playback, regional restrictions and reported CDN quality remain unverified. The unofficial API can change or become unavailable. Contract tests and localhost playback must not be labeled live-provider success.
+- Online favorites, persistent online playlists, downloads and YouTube Music are not implemented. Online queues last for the active service session; expiring links are not restored as a saved local queue.
+- Crossfade, measured gapless timing, acoustic/bit-perfect output, physical audio effects, Android 13+ permissions, latest runtime API behavior, Bluetooth/call interruption, large-font/landscape/accessibility matrices and device performance need further validation.
+- The embedded ClashFLAC experiment remains on its separate branch and is not bundled in this APK. Hosted CI results and fresh cloud snapshot restoration have not been observed.
